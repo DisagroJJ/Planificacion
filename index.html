@@ -279,10 +279,9 @@ table.det tr:hover td{background:#faf6ef;}
 
 <nav class="sidebar" id="sidebar" aria-label="Menú principal">
   <div class="sidebar-logo" onclick="navTo('bienvenida')" style="cursor:pointer;display:flex;align-items:center;gap:10px;" title="Volver al inicio">
-    <img src="logo.png" alt="DISAGRO" style="width:36px;height:auto;flex-shrink:0;">
+    <img src="logo.png" alt="DISAGRO" style="width:54px;height:auto;flex-shrink:0;">
     <div>
-      <p class="eyebrow" style="margin:0;">División Agrícola</p>
-      <h2 style="margin:0;">DISAGRO</h2>
+      <h2 style="margin:0;font-size:1.5em;">DISAGRO</h2>
     </div>
     <div id="sidebarPerfil" style="margin-top:8px;font-size:11px;color:var(--cana-300);font-family:var(--font-mono);"></div>
   </div>
@@ -297,7 +296,7 @@ table.det tr:hover td{background:#faf6ef;}
     <button class="nav-item" onclick="navTo('ejecucion')" id="nav-ejecucion"><span class="icon">✅</span>Ejecución</button>
   </div>
   <div style="margin-top:auto;">
-    <div class="sidebar-footer">Sistema de Planificación<br>DISAGRO<br><span id="footerHora"></span><br><br>Desarrollado por<br><b style="color:rgba(255,255,255,.5);">Hugo Castellanos</b><br><span style="font-size:9px;color:rgba(255,255,255,.35);">Primera versión: pendiente de desplegar</span></div>
+    <div class="sidebar-footer">Sistema de Planificación<br><span style="font-size:1.5em;font-weight:700;">DISAGRO</span><br><span id="footerHora"></span><br><br>Desarrollado por<br><b style="color:rgba(255,255,255,.5);">HCastellanos</b><br><span style="font-size:9px;color:rgba(255,255,255,.35);">Primera versión: pendiente de desplegar</span></div>
   </div>
 </nav>
 
@@ -306,7 +305,7 @@ table.det tr:hover td{background:#faf6ef;}
   <!-- DASHBOARD -->
   <div class="page" id="page-planificacion">
     <div class="top"><div class="top-inner"><div>
-      <p class="eyebrow">DISAGRO</p>
+      <p class="eyebrow" style="font-size:1.5em;">DISAGRO</p>
       <h1>Mi programación semanal</h1>
       <p class="sub">Completa tus actividades de lunes a sábado y guarda directo al consolidado.</p>
     </div></div></div>
@@ -363,13 +362,13 @@ table.det tr:hover td{background:#faf6ef;}
   <!-- EJECUCIÓN -->
   <div class="page" id="page-ejecucion">
     <div class="top"><div class="top-inner"><div>
-      <p class="eyebrow">DISAGRO</p>
+      <p class="eyebrow" style="font-size:1.5em;">DISAGRO</p>
       <h1>Ejecución semanal</h1>
       <p class="sub">Confirma lo que hiciste y agrega lo que surgió en campo.</p>
     </div></div></div>
     <div class="wrap"><div class="top">
   <div class="top-inner">
-    <p class="eyebrow">DISAGRO</p>
+    <p class="eyebrow" style="font-size:1.5em;">DISAGRO</p>
     <h1>Ejecución semanal</h1>
     <p class="sub">Selecciona tu nombre — tu programación carga automáticamente. Confirma, agrega y sube evidencia fotográfica.</p>
   </div>
@@ -412,7 +411,7 @@ table.det tr:hover td{background:#faf6ef;}
   <!-- ANÁLISIS (Dashboard + Historial) -->
   <div class="page" id="page-analisis">
     <div class="top"><div class="top-inner">
-      <div><p class="eyebrow">DISAGRO</p><h1>Planificación del equipo</h1><p class="sub">Planificación de la semana en curso e historial de ejecución.</p></div>
+      <div><p class="eyebrow" style="font-size:1.5em;">DISAGRO</p><h1>Planificación del equipo</h1><p class="sub">Planificación de la semana en curso e historial de ejecución.</p></div>
       <div style="display:flex;gap:8px;">
         <button class="btn btn-ghost" id="btnActualizarA" onclick="actualizar()" style="border-color:rgba(255,255,255,.4);color:#fff;">🔄 Actualizar</button>
         </div>
@@ -448,7 +447,7 @@ table.det tr:hover td{background:#faf6ef;}
           </div>
           <div class="card no-print"><button class="btn btn-primary" onclick="window.print()">🖨️ Imprimir / PDF</button></div>
         </div>
-        <div class="empty-state" id="emptyState"><div class="ico">🌾</div><p>Cargando la planificación del equipo...</p></div>
+        <div class="empty-state" id="emptyState"><p>Cargando la planificación del equipo...</p></div>
       </div>
       <!-- Panel historial -->
       
@@ -458,7 +457,7 @@ table.det tr:hover td{background:#faf6ef;}
   <!-- CUMPLIMIENTO -->
   <div class="page" id="page-cumplimiento">
     <div class="top"><div class="top-inner">
-      <div><p class="eyebrow">DISAGRO</p><h1>Cumplimiento del equipo</h1><p class="sub">Quién cumple, cancela, reprograma y reporta actividades no planificadas.</p></div>
+      <div><p class="eyebrow" style="font-size:1.5em;">DISAGRO</p><h1>Cumplimiento del equipo</h1><p class="sub">Quién cumple, cancela, reprograma y reporta actividades no planificadas.</p></div>
       <div style="display:flex;gap:8px;">
         <button class="btn btn-ghost" id="btnActualizarC" onclick="cargarCumplimiento()" style="border-color:rgba(255,255,255,.4);color:#fff;">🔄 Actualizar</button>
       </div>
@@ -517,7 +516,7 @@ table.det tr:hover td{background:#faf6ef;}
   <div class="page active" id="page-bienvenida">
     <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background:var(--crema);">
       <div style="text-align:center;max-width:380px;">
-        <img src="logo.png" alt="DISAGRO" style="width:260px;max-width:80%;margin-bottom:32px;">
+        <img src="logo.png" alt="DISAGRO" style="width:400px;max-width:90%;margin-bottom:32px;">
 
         <div style="display:flex;flex-direction:column;gap:12px;">
           <button class="btn btn-primary" onclick="navTo('analisis')" style="width:100%;justify-content:center;padding:16px;font-size:15px;">
@@ -679,34 +678,27 @@ const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 let diasData_P = DIAS.map(() => []);
 let semanaCalculada = '';
 
-// ─── ZAFRA Y SEMANA ───────────────────────────────────────────────────────────
-// Zafra inicia el 1 de noviembre de cada año.
+// ─── PERIODO Y SEMANA ───────────────────────────────────────────────────────────
+// Periodo inicia el 1 de noviembre de cada año.
 // Nombre: año de inicio + '-' + últimas 2 cifras del año siguiente.
 // Ej: 1 Nov 2025 – 31 Oct 2026 → "2025-26"
 //     1 Nov 2026 – 31 Oct 2027 → "2026-27"
-function calcularZafra(fecha) {
-  const mes = fecha.getMonth(); // 0=ene … 10=nov
-  const anio = fecha.getFullYear();
-  const anioInicio = mes >= 10 ? anio : anio - 1; // nov=10 en adelante
-  const anioFin = (anioInicio + 1).toString().slice(-2);
-  return `${anioInicio}-${anioFin}`;
+function calcularPeriodo(fecha) {
+  // Periodo = año calendario (DISAGRO trabaja por año natural, no por periodo)
+  return String(fecha.getFullYear());
 }
 
-// Semana dentro de la zafra: semana 1 = semana que contiene el 1 de noviembre.
+// Semana dentro de la periodo: semana 1 = semana que contiene el 1 de noviembre.
 // Usamos lunes de la semana ISO como referencia.
 function calcularSemana(lunesFecha) {
-  const mes = lunesFecha.getMonth();
+  // Semana calendario: la semana 1 es la que contiene el 1 de enero.
   const anio = lunesFecha.getFullYear();
-  const anioInicio = mes >= 10 ? anio : anio - 1;
-  // Inicio de zafra: 1 de noviembre del año de inicio
-  const inicioZafra = new Date(anioInicio, 10, 1); // mes 10 = noviembre
-  // Retroceder al lunes de esa semana
-  const diaSemanaInicio = inicioZafra.getDay(); // 0=dom
+  const inicioAnio = new Date(anio, 0, 1); // 1 de enero
+  const diaSemanaInicio = inicioAnio.getDay(); // 0=dom
   const offsetLunes = diaSemanaInicio === 0 ? -6 : 1 - diaSemanaInicio;
-  const lunesZafra = new Date(inicioZafra);
-  lunesZafra.setDate(inicioZafra.getDate() + offsetLunes);
-  // Diferencia en semanas
-  const diffMs = lunesFecha - lunesZafra;
+  const lunesAnio = new Date(inicioAnio);
+  lunesAnio.setDate(inicioAnio.getDate() + offsetLunes);
+  const diffMs = lunesFecha - lunesAnio;
   const semana = Math.floor(diffMs / (7 * 24 * 3600 * 1000)) + 1;
   return semana;
 }
@@ -761,7 +753,7 @@ function actualizarPills() {
   const raw = document.getElementById('selLunes').value;
   if (!raw) return;
   const lunes = new Date(raw + 'T12:00:00');
-  zafraCalculada = calcularZafra(lunes);
+  periodoCalculada = calcularPeriodo(lunes);
   semanaCalculada = calcularSemana(lunes);
   const domingo = new Date(lunes); domingo.setDate(lunes.getDate() + 6);
   const fmt = d => d.toLocaleDateString('es-GT', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -771,7 +763,7 @@ function actualizarPills() {
     s.textContent = txt;
     pills.appendChild(s);
   };
-  mkPill(`Zafra ${zafraCalculada}`);
+  mkPill(`Periodo ${periodoCalculada}`);
   mkPill(`Semana ${semanaCalculada}`);
   mkPill(`${fmt(lunes)} – ${fmt(domingo)}`);
 }
@@ -998,7 +990,7 @@ function recolectar_P() {
   return {
     responsable: selR.value,
     departamento: document.getElementById('selDepartamento').value,
-    zafra: String(zafraCalculada),
+    periodo: String(periodoCalculada),
     semana: String(semanaCalculada),
     lunesFecha: document.getElementById('selLunes').value,
     actividades,
@@ -1556,7 +1548,7 @@ function jornadaColor_E(hora){
 
 const DIAS_E = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 let diasData_E = DIAS_E.map(()=>[]);
-let metaDatos = {responsable:'',departamento:'',zafra:'',semana:'',lunesFecha:''};
+let metaDatos = {responsable:'',departamento:'',periodo:'',semana:'',lunesFecha:''};
 
 function uid_E(){ return Math.random().toString(36).slice(2,9); }
 function fechaPara_E(i){
@@ -1662,7 +1654,7 @@ async function cargarPlanificacion(nombre){
 
 function aplicarDatos(fuente){
   metaDatos = { responsable:fuente.responsable, departamento:fuente.departamento,
-    zafra:fuente.zafra, semana:String(fuente.semana), 
+    periodo:fuente.periodo, semana:String(fuente.semana), 
     lunesFecha: String(fuente.lunesFecha||'').slice(0,10) }; // normalizar fecha
   diasData_E = DIAS_E.map(()=>[]);
   (fuente.actividades||[]).forEach(a=>{
@@ -1677,7 +1669,7 @@ function aplicarDatos(fuente){
   });
   const sab = metaDatos.lunesFecha ? (()=>{const d=new Date(metaDatos.lunesFecha+'T12:00:00');d.setDate(d.getDate()+5);return d.toISOString().slice(0,10);})() : '';
   const info = document.getElementById('semanaInfo');
-  info.innerHTML=`<span class="si-pill">Zafra ${metaDatos.zafra}</span><span class="si-pill">Semana ${metaDatos.semana}</span><span class="si-txt">${fmtMes(metaDatos.lunesFecha)} – ${fmtMes(sab)}</span>`;
+  info.innerHTML=`<span class="si-pill">Periodo ${metaDatos.periodo}</span><span class="si-pill">Semana ${metaDatos.semana}</span><span class="si-txt">${fmtMes(metaDatos.lunesFecha)} – ${fmtMes(sab)}</span>`;
   info.classList.add('visible');
   renderDias_E();
   document.getElementById('cardEjec').style.display='';
@@ -2144,7 +2136,7 @@ function renderMeta(){
     rango = `${fmt(d0)} – ${fmt(d6)}, ${d6.getFullYear()}`;
   }
   (document.getElementById('metaSemana')||{}).innerHTML =
-    `Zafra ${a.zafra||'—'}<br>Semana ${semanas.join(', ')}<br>${rango}`;
+    `Periodo ${a.periodo||'—'}<br>Semana ${semanas.join(', ')}<br>${rango}`;
 }
 
 function poblarFiltros_D(){
