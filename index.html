@@ -51,7 +51,7 @@ h1{letter-spacing:-.01em;font-size:clamp(22px,3.5vw,32px);font-weight:700;margin
 @media(max-width:600px){.grid2,.grid3{grid-template-columns:1fr;}}
 .field{margin-bottom:4px;}
 label{display:block;font-size:12px;font-weight:600;color:var(--texto-suave);margin-bottom:5px;letter-spacing:.01em;}
-input[type=text],input[type=date],select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--linea);border-radius:8px;background:#fff;font-family:var(--font-body);font-size:14px;color:var(--texto);transition:border-color .15s;}
+input[type=text],input[type=password],input[type=date],select,textarea{width:100%;padding:10px 12px;border:1.5px solid var(--linea);border-radius:8px;background:#fff;font-family:var(--font-body);font-size:14px;color:var(--texto);transition:border-color .15s;}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--terracota);box-shadow:0 0 0 3px rgba(193,101,47,.25);}
 input[readonly],input[disabled]{background:#f5f0e8;color:var(--texto-suave);cursor:default;}
 select{width:100%;padding:10px 12px;border:1.5px solid var(--linea);border-radius:8px;background:#fff;font-family:var(--font-body);font-size:14px;color:var(--texto);transition:border-color .15s;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="10" height="6"><path d="M0 0l5 6 5-6z" fill="%236b5e4c"/></svg>');background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;}
@@ -326,7 +326,7 @@ table.det tr:hover td{background:#faf6ef;}
   <div style="margin-top:auto;">
     <a href="https://drive.google.com/file/d/16nfEpM0cNBNk3YXU04ZLvAZ4I7jAZT_3/view?usp=drive_link" target="_blank" rel="noopener" style="display:block;text-align:center;background:rgba(200,137,28,.15);border:1px solid var(--terracota,#c8891c);color:var(--terracota,#c8891c);text-decoration:none;font-weight:600;font-size:12px;padding:9px;margin:0 16px 12px;border-radius:8px;">📖 Leer manual de usuario</a>
     <button class="nav-item" onclick="cerrarSesion()" style="color:rgba(255,255,255,.6);"><span class="icon">🚪</span>Cerrar sesión</button>
-    <div class="sidebar-footer">Sistema de Planificación<br><span style="font-size:1.5em;font-weight:700;">DISAGRO</span><br><span id="footerHora"></span><br><br>Desarrollado por<br><b style="color:rgba(255,255,255,.5);">HCastellanos</b><br><span style="font-size:9px;color:rgba(255,255,255,.35);">Última versión: 15/08/2026 · 09:59</span></div>
+    <div class="sidebar-footer">Sistema de Planificación<br><span style="font-size:1.5em;font-weight:700;">DISAGRO</span><br><span id="footerHora"></span><br><br>Desarrollado por<br><b style="color:rgba(255,255,255,.5);">HCastellanos</b><br><span style="font-size:9px;color:rgba(255,255,255,.35);">Última versión: 15/08/2026 · 10:07</span></div>
   </div>
 </nav>
 
@@ -623,7 +623,7 @@ function mostrarBloqueDomingo(contenedor) {
 
 
 
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwmyxfR7HD1J4p1z-Y4RXxZEySYw_Z0SuhezWSPl1yRPSjfFMDtvQnI5-UR7jKF91kS/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby1qVJPg2fyvy471RTdR2-rGxbZ9qnDaBuWGBAws2BFzL6q1zV5PUlvOHXUKJpF0lRg/exec';
 
 // ── SESIÓN / LOGIN ────────────────────────────────────────────────────────
 const CLAVE_SESION = 'disagro_sesion';
