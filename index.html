@@ -277,7 +277,10 @@ table.det tr:hover td{background:#faf6ef;}
 .login-box h1{font-size:20px;margin:0 0 20px;text-align:center;color:var(--cana-900);}
 .login-box .field{margin-bottom:14px;}
 .login-error{font-size:12px;color:var(--alerta);font-weight:600;margin-top:10px;min-height:16px;text-align:center;}
-.login-box .btn{width:100%;justify-content:center;margin-top:6px;}
+/* Botón cerrar sesión — esquina superior derecha */
+.logout-btn{position:fixed;top:12px;right:16px;z-index:35;display:flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--linea);color:var(--alerta);font-family:var(--font-body);font-weight:600;font-size:12.5px;padding:8px 14px;border-radius:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.08);transition:background .15s,border-color .15s;}
+.logout-btn:hover{background:#fbe9e2;border-color:var(--alerta);}
+@media(max-width:768px){.logout-btn{top:10px;right:10px;padding:7px 12px;font-size:12px;}}
 </style>
 </head>
 <body>
@@ -303,6 +306,7 @@ table.det tr:hover td{background:#faf6ef;}
 </div>
 
 <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+<button class="logout-btn" id="btnLogoutTop" onclick="cerrarSesion()" style="display:none;">🚪 Cerrar sesión</button>
 <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
 
 <nav class="sidebar" id="sidebar" aria-label="Menú principal">
@@ -325,7 +329,6 @@ table.det tr:hover td{background:#faf6ef;}
   </div>
   <div style="margin-top:auto;">
     <a href="https://drive.google.com/file/d/16nfEpM0cNBNk3YXU04ZLvAZ4I7jAZT_3/view?usp=drive_link" target="_blank" rel="noopener" style="display:block;text-align:center;background:rgba(200,137,28,.15);border:1px solid var(--terracota,#c8891c);color:var(--terracota,#c8891c);text-decoration:none;font-weight:600;font-size:12px;padding:9px;margin:0 16px 12px;border-radius:8px;">📖 Leer manual de usuario</a>
-    <button class="nav-item" onclick="cerrarSesion()" style="color:rgba(255,255,255,.6);"><span class="icon">🚪</span>Cerrar sesión</button>
     <div class="sidebar-footer">Sistema de Planificación<br><span style="font-size:1.5em;font-weight:700;">DISAGRO</span><br><span id="footerHora"></span><br><br>Desarrollado por<br><b style="color:rgba(255,255,255,.5);">HCastellanos</b><br><span style="font-size:9px;color:rgba(255,255,255,.35);">Última versión: 15/08/2026 · 10:07</span></div>
   </div>
 </nav>
@@ -674,6 +677,8 @@ function cerrarSesion() {
 
 function entrarAlSistema() {
   document.getElementById('loginOverlay').style.display = 'none';
+  const btnTop = document.getElementById('btnLogoutTop');
+  if (btnTop) btnTop.style.display = 'flex';
   const perfil = document.getElementById('sidebarPerfil');
   if (perfil) perfil.textContent = SESION.nombre + (SESION.esAdmin ? ' · Admin' : ' · ' + SESION.departamento);
   iniciarApp();
@@ -707,6 +712,11 @@ function navTo(page){
   if (sidebar) sidebar.style.display = (page === 'bienvenida') ? 'none' : '';
   closeSidebar();
   window.scrollTo(0,0);
+  // Recordar la última sección de trabajo (Planificación/Ejecución) para
+  // volver ahí automáticamente la próxima vez que inicie sesión.
+  if (page === 'planificacion' || page === 'ejecucion') {
+    try { localStorage.setItem('disagro_ultima_pagina', page); } catch(_) {}
+  }
   // Al navegar a Análisis — siempre disponible (solo consulta)
   if (page === 'analisis' && typeof actualizar === 'function') {
     const dash = document.getElementById('dashContent');
@@ -715,6 +725,10 @@ function navTo(page){
   // Al navegar a Cumplimiento — siempre disponible (solo consulta)
   if (page === 'cumplimiento' && !cumplimientoCargado) {
     cargarCumplimiento();
+  }
+  // Al navegar a Planificación — recupera en silencio lo último que iba llenando
+  if (page === 'planificacion' && typeof recuperarBorrador === 'function' && !diasData_P.some(d=>d.length)) {
+    recuperarBorrador(true);
   }
 }
 function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('open'); }
@@ -727,7 +741,11 @@ function iniciarApp() {
   cargarEquipoSelect();
   autoSeleccionarSemana();
   cargarEquipoSelectE();
-  navTo('analisis');
+  // Volver directo a donde se quedó trabajando (Planificación o Ejecución);
+  // si nunca ha estado ahí, entra a la vista de consulta por defecto.
+  let ultima = 'analisis';
+  try { ultima = localStorage.getItem('disagro_ultima_pagina') || 'analisis'; } catch(_) {}
+  navTo(ultima);
 }
 
 // ── SHARED: toast + lightbox ────────────────────────────────────────────────
@@ -1111,11 +1129,14 @@ function guardarBorrador_P() {
   try { localStorage.setItem('borrador_mt_prog', JSON.stringify(recolectar_P())); } catch (_) {}
 }
 
-function recuperarBorrador() {
+function recuperarBorrador(silencioso) {
   try {
     const raw = localStorage.getItem('borrador_mt_prog');
-    if (!raw) { showToast('No hay borrador guardado en este dispositivo'); return; }
+    if (!raw) { if (!silencioso) showToast('No hay borrador guardado en este dispositivo'); return; }
     const d = JSON.parse(raw);
+
+    // Solo autorrestaurar en silencio si el borrador es de la persona ya logueada
+    if (silencioso && d.responsable !== SESION.nombre) return;
 
     // Restaurar responsable
     if (d.responsable && selR) {
@@ -1144,9 +1165,9 @@ function recuperarBorrador() {
     });
     renderDias_P();
     mostrarSecciones();
-    showToast('Borrador recuperado ✓');
+    if (!silencioso) showToast('Borrador recuperado ✓');
   } catch(_) {
-    showToast('No se pudo recuperar el borrador');
+    if (!silencioso) showToast('No se pudo recuperar el borrador');
   }
 }
 
