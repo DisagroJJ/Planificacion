@@ -329,7 +329,7 @@ table.det tr:hover td{background:#faf6ef;}
   </div>
   <div style="margin-top:auto;">
     <a href="https://drive.google.com/file/d/16nfEpM0cNBNk3YXU04ZLvAZ4I7jAZT_3/view?usp=drive_link" target="_blank" rel="noopener" style="display:block;text-align:center;background:rgba(200,137,28,.15);border:1px solid var(--terracota,#c8891c);color:var(--terracota,#c8891c);text-decoration:none;font-weight:600;font-size:12px;padding:9px;margin:0 16px 12px;border-radius:8px;">📖 Leer manual de usuario</a>
-    <div class="sidebar-footer">Sistema de Planificación<br><span style="font-size:1.5em;font-weight:700;">DISAGRO</span><br><span id="footerHora"></span><br><br>Desarrollado por<br><b style="color:rgba(255,255,255,.5);">HCastellanos</b><br><span style="font-size:9px;color:rgba(255,255,255,.35);">Última versión: 15/08/2026 · 10:07</span></div>
+    <div class="sidebar-footer">Sistema de Planificación<br><span style="font-size:1.5em;font-weight:700;">DISAGRO</span><br><span id="footerHora"></span><br><br>Desarrollado por<br><b style="color:rgba(255,255,255,.5);">HCastellanos</b><br><span style="font-size:9px;color:rgba(255,255,255,.35);">Última versión: 15/08/2026 · 10:21</span></div>
   </div>
 </nav>
 
@@ -626,7 +626,7 @@ function mostrarBloqueDomingo(contenedor) {
 
 
 
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycby1qVJPg2fyvy471RTdR2-rGxbZ9qnDaBuWGBAws2BFzL6q1zV5PUlvOHXUKJpF0lRg/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyd4D7JuIGeKGV3V5TvnniMOGjZuc_2WOLrtA9hayfhiTZ-3FfigwjwPjzcfNBkw_bW/exec';
 
 // ── SESIÓN / LOGIN ────────────────────────────────────────────────────────
 const CLAVE_SESION = 'disagro_sesion';
@@ -738,6 +738,7 @@ actualizarHora(); setInterval(actualizarHora, 60000);
 
 // ── ARRANQUE DE LA APP (se llama solo después de un login válido) ──────────
 function iniciarApp() {
+  cargarOpciones();
   cargarEquipoSelect();
   autoSeleccionarSemana();
   cargarEquipoSelectE();
@@ -775,23 +776,25 @@ function normalizarHora(v) {
 // Equipo — nombre : departamento
 let EQUIPO = {}; // se llena dinámicamente desde la hoja "Equipo" del Sheet
 
-// Zonas / lugares
-const ZONAS = [
-  'Oficina Central','Bodega','Campo/Finca','Reunión Virtual','Cliente','Proveedor'
-  // TODO: reemplazar con los lugares/zonas reales de DISAGRO
-];
+// Zonas / lugares y Temas — se cargan dinámicamente desde las hojas
+// "Temas" y "Lugares" del Sheet (ver cargarOpciones()). Empiezan vacíos.
+let ZONAS = [];
+let TEMAS = [];
+let ZONAS_E = [];
+let TEMAS_E = [];
 
-// Temas de actividad
-const TEMAS = [
-  'Administrativo','Logística','Capacitación','Reporte / Informe',
-  'Reunión presencial','Reunión virtual','Ensayo','Asesorías',
-  'Supervisión de labores','Preparación de Tierras','Fertilización',
-  'Siembra Mecanizada','Resiembra Mecánica','Subproductos',
-  'Sacado de piedra manual','Sacado de piedra mecánico','Muestreo de suelos',
-  'Madurantes','Herbicidas','Inhibidor','Bioestimulantes','Premadurante',
-  'Malezas','Plagas','Semillero','Riego','Diseño de campo',
-  'Tomas agua fábrica','Elaboración de planos','Maquinaria','Muestreo',
-];
+async function cargarOpciones() {
+  try {
+    const res = await fetch(WEB_APP_URL + '?modo=opciones' + qsCodigo() + '&t=' + Date.now());
+    const data = await res.json();
+    if (data.ok) {
+      TEMAS = data.temas || [];
+      ZONAS = data.lugares || [];
+      TEMAS_E = TEMAS;
+      ZONAS_E = ZONAS;
+    }
+  } catch(_) { showToast('No se pudieron cargar Temas/Lugares'); }
+}
 const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 let diasData_P = DIAS.map(() => []);
 let semanaCalculada = '';
@@ -1648,10 +1651,7 @@ function comprimirImagen(file, callback) {
 
 // EJECUCIÓN
 let EQUIPO_E = {}; // se llena dinámicamente desde la hoja "Equipo" del Sheet
-
-const ZONAS_E = ['Oficina Central','Bodega','Campo/Finca','Reunión Virtual','Cliente','Proveedor']; // TODO: reemplazar con lugares reales de DISAGRO
-
-const TEMAS_E = ['Administrativo','Logística','Capacitación','Reporte / Informe','Reunión presencial','Reunión virtual','Ensayo','Asesorías','Supervisión de labores','Preparación de Tierras','Fertilización','Siembra Mecanizada','Resiembra Mecánica','Subproductos','Sacado de piedra manual','Sacado de piedra mecánico','Muestreo de suelos','Madurantes','Herbicidas','Inhibidor','Bioestimulantes','Premadurante','Malezas','Plagas','Semillero','Riego','Diseño de campo','Tomas agua fábrica','Elaboración de planos','Maquinaria','Muestreo'];
+// ZONAS_E y TEMAS_E se comparten con Planificación — ver cargarOpciones() más arriba.
 
 // Estados disponibles para actividades planificadas
 // Estados con colores sólidos para botones activos
