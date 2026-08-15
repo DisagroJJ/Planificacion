@@ -270,9 +270,37 @@ table.det tr:hover td{background:#faf6ef;}
 @keyframes load{0%{transform:translateX(-100%)}100%{transform:translateX(400%)}}
 /* Accesibilidad: indicador de foco al navegar con teclado */
 .btn:focus-visible,.nav-item:focus-visible,.tab:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(193,101,47,.45);}
+/* LOGIN */
+.login-overlay{position:fixed;inset:0;background:linear-gradient(135deg,var(--cana-900) 0%,var(--cana-700) 55%,var(--cana-500) 100%);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;}
+.login-box{background:#fff;border-radius:16px;padding:32px 28px;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.login-box .eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--cana-500);margin:0 0 6px;text-align:center;}
+.login-box h1{font-size:20px;margin:0 0 20px;text-align:center;color:var(--cana-900);}
+.login-box .field{margin-bottom:14px;}
+.login-error{font-size:12px;color:var(--alerta);font-weight:600;margin-top:10px;min-height:16px;text-align:center;}
+.login-box .btn{width:100%;justify-content:center;margin-top:6px;}
 </style>
 </head>
 <body>
+
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <img src="logo.png" alt="DISAGRO" style="width:72px;height:auto;display:block;margin:0 auto 14px;">
+    <p class="eyebrow">DISAGRO</p>
+    <h1>Sistema de Planificación</h1>
+    <form id="formLogin" onsubmit="return false;">
+      <div class="field">
+        <label for="loginCodigo">Código de usuario</label>
+        <input type="text" id="loginCodigo" autocomplete="username" placeholder="Tu código">
+      </div>
+      <div class="field">
+        <label for="loginPass">Contraseña</label>
+        <input type="password" id="loginPass" autocomplete="current-password" placeholder="Tu contraseña">
+      </div>
+      <button type="submit" class="btn btn-primary" id="btnLogin" onclick="intentarLogin()">Entrar</button>
+      <p class="login-error" id="loginError"></p>
+    </form>
+  </div>
+</div>
 
 <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
 <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
@@ -297,7 +325,8 @@ table.det tr:hover td{background:#faf6ef;}
   </div>
   <div style="margin-top:auto;">
     <a href="https://drive.google.com/file/d/16nfEpM0cNBNk3YXU04ZLvAZ4I7jAZT_3/view?usp=drive_link" target="_blank" rel="noopener" style="display:block;text-align:center;background:rgba(200,137,28,.15);border:1px solid var(--terracota,#c8891c);color:var(--terracota,#c8891c);text-decoration:none;font-weight:600;font-size:12px;padding:9px;margin:0 16px 12px;border-radius:8px;">📖 Leer manual de usuario</a>
-    <div class="sidebar-footer">Sistema de Planificación<br><span style="font-size:1.5em;font-weight:700;">DISAGRO</span><br><span id="footerHora"></span><br><br>Desarrollado por<br><b style="color:rgba(255,255,255,.5);">HCastellanos</b><br><span style="font-size:9px;color:rgba(255,255,255,.35);">Última versión: 11/08/2026 · 14:45</span></div>
+    <button class="nav-item" onclick="cerrarSesion()" style="color:rgba(255,255,255,.6);"><span class="icon">🚪</span>Cerrar sesión</button>
+    <div class="sidebar-footer">Sistema de Planificación<br><span style="font-size:1.5em;font-weight:700;">DISAGRO</span><br><span id="footerHora"></span><br><br>Desarrollado por<br><b style="color:rgba(255,255,255,.5);">HCastellanos</b><br><span style="font-size:9px;color:rgba(255,255,255,.35);">Última versión: 15/08/2026 · 09:59</span></div>
   </div>
 </nav>
 
@@ -594,7 +623,69 @@ function mostrarBloqueDomingo(contenedor) {
 
 
 
-const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwtWrADL8pX1mu0qd96iLzkO9tihWOk4h35Bc7UYF_En3b6NvRaTisei4_wmtoIHsEt/exec';
+const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwmyxfR7HD1J4p1z-Y4RXxZEySYw_Z0SuhezWSPl1yRPSjfFMDtvQnI5-UR7jKF91kS/exec';
+
+// ── SESIÓN / LOGIN ────────────────────────────────────────────────────────
+const CLAVE_SESION = 'disagro_sesion';
+let SESION = null; // {codigo, nombre, departamento, esAdmin}
+
+function qsCodigo() {
+  return '&codigo=' + encodeURIComponent(SESION ? SESION.codigo : '');
+}
+
+function cargarSesionGuardada() {
+  try {
+    const raw = localStorage.getItem(CLAVE_SESION);
+    return raw ? JSON.parse(raw) : null;
+  } catch(_) { return null; }
+}
+
+async function intentarLogin() {
+  const codigo = document.getElementById('loginCodigo').value.trim();
+  const pass   = document.getElementById('loginPass').value;
+  const err    = document.getElementById('loginError');
+  const btn    = document.getElementById('btnLogin');
+  err.textContent = '';
+  if (!codigo || !pass) { err.textContent = 'Ingresa tu código y contraseña'; return; }
+  btn.disabled = true; btn.textContent = 'Entrando…';
+  try {
+    const res = await fetch(WEB_APP_URL, {
+      method: 'POST',
+      body: JSON.stringify({ tipo: 'login', codigo, contrasena: pass })
+    });
+    const data = await res.json();
+    if (!data.ok) { err.textContent = data.error || 'No se pudo iniciar sesión'; return; }
+    SESION = data.sesion;
+    localStorage.setItem(CLAVE_SESION, JSON.stringify(SESION));
+    entrarAlSistema();
+  } catch(_) {
+    err.textContent = 'Sin conexión con el servidor — intenta de nuevo';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+}
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') intentarLogin(); });
+document.getElementById('loginCodigo').addEventListener('keydown', e => { if (e.key === 'Enter') intentarLogin(); });
+
+function cerrarSesion() {
+  localStorage.removeItem(CLAVE_SESION);
+  location.reload();
+}
+
+function entrarAlSistema() {
+  document.getElementById('loginOverlay').style.display = 'none';
+  const perfil = document.getElementById('sidebarPerfil');
+  if (perfil) perfil.textContent = SESION.nombre + (SESION.esAdmin ? ' · Admin' : ' · ' + SESION.departamento);
+  iniciarApp();
+}
+
+(function iniciarSesionAlCargar() {
+  const guardada = cargarSesionGuardada();
+  if (guardada && guardada.codigo) {
+    SESION = guardada;
+    entrarAlSistema();
+  }
+})();
 
 // Variables globales compartidas
 let archivos = [];
@@ -630,6 +721,14 @@ function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('o
 function closeSidebar(){ document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
 function actualizarHora(){ document.getElementById('footerHora').textContent = new Date().toLocaleTimeString('es-GT',{hour:'2-digit',minute:'2-digit'}); }
 actualizarHora(); setInterval(actualizarHora, 60000);
+
+// ── ARRANQUE DE LA APP (se llama solo después de un login válido) ──────────
+function iniciarApp() {
+  cargarEquipoSelect();
+  autoSeleccionarSemana();
+  cargarEquipoSelectE();
+  navTo('analisis');
+}
 
 // ── SHARED: toast + lightbox ────────────────────────────────────────────────
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2800); }
@@ -708,24 +807,32 @@ function calcularSemana(lunesFecha) {
 const selR = document.getElementById('selResponsable');
 async function cargarEquipoSelect() {
   try {
-    const res = await fetch(WEB_APP_URL + '?modo=equipo&t=' + Date.now());
+    const res = await fetch(WEB_APP_URL + '?modo=equipo' + qsCodigo() + '&t=' + Date.now());
     const data = await res.json();
     if (data.ok && data.equipo) {
       EQUIPO = {};
       data.equipo.forEach(p => { EQUIPO[p.nombre] = p.departamento; });
-      selR.innerHTML = '<option value="">Selecciona tu nombre…</option>';
-      Object.keys(EQUIPO).sort().forEach(nombre => {
+      if (!SESION.esAdmin) {
+        // No-admin: solo registra su propia programación, no la de compañeros
+        selR.innerHTML = '';
         const opt = document.createElement('option');
-        opt.value = nombre; opt.textContent = nombre;
+        opt.value = SESION.nombre; opt.textContent = SESION.nombre;
         selR.appendChild(opt);
-      });
+        selR.value = SESION.nombre;
+        selR.disabled = true;
+      } else {
+        selR.disabled = false;
+        selR.innerHTML = '<option value="">Selecciona tu nombre…</option>';
+        Object.keys(EQUIPO).sort().forEach(nombre => {
+          const opt = document.createElement('option');
+          opt.value = nombre; opt.textContent = nombre;
+          selR.appendChild(opt);
+        });
+      }
+      selR.dispatchEvent(new Event('change'));
     }
   } catch(_) { showToast('No se pudo cargar la lista del equipo'); }
 }
-cargarEquipoSelect();
-
-// Preseleccionar próximo lunes al cargar
-autoSeleccionarSemana();
 
 selR.addEventListener('change', () => {
   const depto = EQUIPO[selR.value] || '';
@@ -995,7 +1102,8 @@ function recolectar_P() {
     semana: String(semanaCalculada),
     lunesFecha: document.getElementById('selLunes').value,
     actividades,
-    tipo: 'planificacion'
+    tipo: 'planificacion',
+    codigo: SESION.codigo
   };
 }
 
@@ -1206,7 +1314,7 @@ async function cargarSemanaSugerida() {
   btn.disabled = true; btn.textContent = 'Cargando…';
 
   try {
-    const res  = await fetch(WEB_APP_URL + '?responsable=' + encodeURIComponent(nombre) + '&t=' + Date.now());
+    const res  = await fetch(WEB_APP_URL + '?responsable=' + encodeURIComponent(nombre) + qsCodigo() + '&t=' + Date.now());
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || 'Error al conectar');
 
@@ -1248,7 +1356,7 @@ async function cargarMiPlanificacion() {
   const estado = document.getElementById('estadoCargaPlan');
   btn.disabled = true; btn.textContent = 'Cargando…';
   try {
-    const res  = await fetch(WEB_APP_URL + '?semana=' + semanaCalculada + '&t=' + Date.now());
+    const res  = await fetch(WEB_APP_URL + '?semana=' + semanaCalculada + qsCodigo() + '&t=' + Date.now());
     const data = await res.json();
     if (!data.ok) throw new Error(data.error || 'Error al conectar');
     const semanaTarget = String(semanaCalculada);
@@ -1564,20 +1672,29 @@ function fmtMes(iso){ if(!iso)return''; return new Date(iso+'T12:00:00').toLocal
 const selR_E = document.getElementById('selResp');
 async function cargarEquipoSelectE() {
   try {
-    const res = await fetch(WEB_APP_URL + '?modo=equipo&t=' + Date.now());
+    const res = await fetch(WEB_APP_URL + '?modo=equipo' + qsCodigo() + '&t=' + Date.now());
     const data = await res.json();
     if (data.ok && data.equipo) {
       EQUIPO_E = {};
       data.equipo.forEach(p => { EQUIPO_E[p.nombre] = p.departamento; });
-      selR_E.innerHTML = '<option value="">Selecciona tu nombre…</option>';
-      Object.keys(EQUIPO_E).sort().forEach(n => {
-        const o = document.createElement('option'); o.value = n; o.textContent = n;
+      if (!SESION.esAdmin) {
+        selR_E.innerHTML = '';
+        const o = document.createElement('option'); o.value = SESION.nombre; o.textContent = SESION.nombre;
         selR_E.appendChild(o);
-      });
+        selR_E.value = SESION.nombre;
+        selR_E.disabled = true;
+      } else {
+        selR_E.disabled = false;
+        selR_E.innerHTML = '<option value="">Selecciona tu nombre…</option>';
+        Object.keys(EQUIPO_E).sort().forEach(n => {
+          const o = document.createElement('option'); o.value = n; o.textContent = n;
+          selR_E.appendChild(o);
+        });
+      }
+      selR_E.dispatchEvent(new Event('change'));
     }
   } catch(_) { showToast('No se pudo cargar la lista del equipo'); }
 }
-cargarEquipoSelectE();
 selR_E.addEventListener('change',()=>{ if(selR_E.value) cargarPlanificacion(selR_E.value); });
 
 // ── Cargar planificación ────────────────────────────────────────────
@@ -1605,7 +1722,7 @@ async function cargarPlanificacion(nombre){
     const lunesFE = new Date(hoyFE);
     lunesFE.setDate(hoyFE.getDate() - diasDesdeLunesFE);
     const semanaEjec = calcularSemana(lunesFE);
-    const res  = await fetch(WEB_APP_URL+'?responsable='+encodeURIComponent(nombre)+'&semana='+semanaEjec+'&t='+Date.now());
+    const res  = await fetch(WEB_APP_URL+'?responsable='+encodeURIComponent(nombre)+'&semana='+semanaEjec+qsCodigo()+'&t='+Date.now());
     const data = await res.json();
     if(!data.ok) throw new Error(data.error);
     const misPersonas = (data.personas||[]).filter(p=>p.responsable===nombre);
@@ -1633,7 +1750,7 @@ async function cargarPlanificacion(nombre){
     try {
       const resEjec = await fetch(
         WEB_APP_URL + '?modo=ejecucion&responsable=' +
-        encodeURIComponent(nombre) + '&semana=' + ultima.semana + '&t=' + Date.now()
+        encodeURIComponent(nombre) + '&semana=' + ultima.semana + qsCodigo() + '&t=' + Date.now()
       );
       const dataEjec = await resEjec.json();
 
@@ -2014,7 +2131,7 @@ function recolectar_E(){
     noPlaneada:!!a.noPlaneada, foto:(a.foto && String(a.foto).startsWith('data:image')) ? a.foto : null,
     horaInicio:a.horaInicio||'', horaFin:a.horaFin||'', horasHombre:a.horasHombre||'',
   })));
-  return {...metaDatos,actividades:acts,tipo:'ejecucion',generadoEn:new Date().toISOString()};
+  return {...metaDatos,actividades:acts,tipo:'ejecucion',generadoEn:new Date().toISOString(),codigo:SESION.codigo};
 }
 
 // ── Guardar en la nube ───────────────────────────────────────────────
@@ -2071,7 +2188,7 @@ async function actualizar(){
     lunesA.setDate(hoyA.getDate() + (dowA === 0 ? 1 : 1 - dowA));
     const semanaVigente = calcularSemana(lunesA);
 
-    const res = await fetch(WEB_APP_URL + '?semana=' + semanaVigente + '&t=' + Date.now());
+    const res = await fetch(WEB_APP_URL + '?semana=' + semanaVigente + qsCodigo() + '&t=' + Date.now());
     const data = await res.json();
     if(!data.ok){ showToast('Error: ' + (data.error||'')); return; }
     archivos = (data.personas||[]);
@@ -2369,7 +2486,7 @@ async function cargarCumplimiento(){
       semanas.push(calcularSemana(d));
     }
 
-    const res = await fetch(WEB_APP_URL + '?modo=cumplimiento&semana=' + semanas.join(',') + '&t=' + Date.now());
+    const res = await fetch(WEB_APP_URL + '?modo=cumplimiento&semana=' + semanas.join(',') + qsCodigo() + '&t=' + Date.now());
     const data = await res.json();
     if(!data.ok){ showToast('Error: ' + (data.error||'')); return; }
     cumplimientoCargado = true;
